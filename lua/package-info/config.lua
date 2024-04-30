@@ -1,7 +1,7 @@
+local autocmd = vim.api.nvim_create_autocmd
 local constants = require('package-info.utils.constants')
 local job = require('package-info.utils.job')
 local logger = require('package-info.utils.better_logger')
-local register_autocmd = require('package-info.utils.register-autocmd')
 local state = require('package-info.state')
 
 local default_config = {
@@ -88,22 +88,26 @@ end
 --- Prepare a clean augroup for the plugin to use
 --- @return nil
 M.__prepare_augroup = function()
-  vim.cmd('augroup ' .. constants.AUGROUP)
-  vim.cmd('autocmd!')
-  vim.cmd('augroup end')
+  vim.api.nvim_create_augroup(constants.AUGROUP, { clear = true })
 end
 
 --- Register autocommand for loading the plugin
 --- @return nil
 M.__register_start = function()
-  register_autocmd('BufEnter', require('package-info.core').load_plugin)
+  autocmd('BufEnter', {
+    group = constants.AUGROUP,
+    callback = require('package-info.core').load_plugin,
+  })
 end
 
 --- Register autocommand for auto-starting plugin
 --- @return nil
 M.__register_autostart = function()
   if M.options.autostart then
-    register_autocmd('BufEnter', require('package-info').show)
+    autocmd('BufEnter', {
+      group = constants.AUGROUP,
+      callback = require('package-info').show,
+    })
   end
 end
 
