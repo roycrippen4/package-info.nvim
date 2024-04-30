@@ -11,7 +11,7 @@ local M = {}
 ---    - Is a file named package.json
 ---    - Has content
 ---    - JSON is in valid format
--- @return boolean
+--- @return boolean
 M.__is_valid_package_json = function()
   local buffer_name = vim.api.nvim_buf_get_name(0)
   local is_package_json = to_boolean(string.match(buffer_name, 'package.json$'))
@@ -38,7 +38,7 @@ M.__is_valid_package_json = function()
 end
 
 --- Parser current buffer if valid
--- @return nil
+--- @return nil
 M.load_plugin = function()
   if not M.__is_valid_package_json() then
     state.is_loaded = false
