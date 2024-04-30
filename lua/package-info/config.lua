@@ -20,7 +20,7 @@ local default_config = {
   package_manager = constants.PACKAGE_MANAGERS.npm,
   hide_up_to_date = false,
   hide_unstable_versions = false,
-  debug = false,
+  debug = true,
 }
 
 local M = {}
@@ -85,13 +85,6 @@ M.__register_package_manager = function()
   end
 end
 
---- Clone options and replace empty ones with default ones
--- @param user_options: M.__DEFAULT_OPTIONS - all the options user can provide in the plugin config
---- @return nil
-M.__register_user_options = function(user_options)
-  M.options = vim.tbl_deep_extend('keep', user_options or {}, default_config)
-end
-
 --- Prepare a clean augroup for the plugin to use
 --- @return nil
 M.__prepare_augroup = function()
@@ -146,11 +139,23 @@ M.__register_commands = function()
   vim.cmd('command! ' .. constants.COMMANDS.change_version .. " lua require('package-info').change_version()")
 end
 
+---@param debug boolean
+function M.__register_logger(debug)
+  if debug then
+    vim.schedule(function()
+      require('package-info.utils.better_logger'):show()
+    end)
+    logger:log('Debug logging enabled')
+    logger:log()
+  end
+end
+
 --- Take all user options and setup the config
 -- @param user_options default M table - all options user can provide in the plugin config
 --- @return nil
 M.setup = function(user_options)
-  M.__register_user_options(user_options)
+  M.options = vim.tbl_deep_extend('force', default_config, user_options or {})
+  M.__register_logger(M.options.debug)
   M.__register_highlight_groups()
   M.__register_package_manager()
   M.__register_namespace()

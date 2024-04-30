@@ -4,13 +4,6 @@ local M = {}
 
 M.setup = function(options)
   local config = require('package-info.config')
-
-  vim.schedule(function()
-    if os.getenv('DEBUG') == '1' then
-      require('package-info.utils.better_logger'):show()
-    end
-  end)
-
   config.setup(options)
 end
 
