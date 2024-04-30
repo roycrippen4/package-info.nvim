@@ -3,7 +3,7 @@ local register_highlight_group = require('package-info.utils.register-highlight-
 local register_autocmd = require('package-info.utils.register-autocmd')
 local state = require('package-info.state')
 local job = require('package-info.utils.job')
-local logger = require('package-info.utils.logger')
+local logger = require('package-info.utils.better_logger')
 
 local M = {
   __DEFAULT_OPTIONS = {
@@ -52,7 +52,7 @@ M.__register_package_manager = function()
         end
       end,
       on_error = function()
-        logger.error('Error detecting yarn version. Falling back to yarn <2')
+        logger:log('Error detecting yarn version. Falling back to yarn <2')
       end,
     })
 
@@ -101,32 +101,17 @@ M.__prepare_augroup = function()
 end
 
 --- Register autocommand for loading the plugin
----- @return nil
+--- @return nil
 M.__register_start = function()
   register_autocmd('BufEnter', "lua require('package-info.core').load_plugin()")
 end
 
 --- Register autocommand for auto-starting plugin
----- @return nil
+--- @return nil
 M.__register_autostart = function()
   if M.options.autostart then
     register_autocmd('BufEnter', "lua require('package-info').show()")
   end
-end
-
---- Sets the plugin colors after the user colorscheme is loaded
----- @return nil
-M.__register_colorscheme_initialization = function()
-  local colorscheme = vim.api.nvim_exec('colorscheme', true)
-
-  -- If user has no colorscheme(colorscheme is "default"), set the colors manually
-  if colorscheme == 'default' then
-    M.__register_highlight_groups()
-
-    return
-  end
-
-  register_autocmd('ColorScheme', "lua require('package-info.config').__register_highlight_groups()")
 end
 
 --- Register all highlight groups
@@ -171,7 +156,6 @@ M.setup = function(user_options)
   M.__register_namespace()
   M.__prepare_augroup()
   M.__register_start()
-  M.__register_colorscheme_initialization()
   M.__register_autostart()
   M.__register_commands()
 end
