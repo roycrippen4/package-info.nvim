@@ -1,7 +1,7 @@
 local prompt = require('package-info.ui.generic.prompt')
 local job = require('package-info.utils.job')
 local config = require('package-info.config')
-local logger = require('package-info.utils.logger')
+-- local logger = require('package-info.utils.better_logger')
 local state = require('package-info.state')
 local constants = require('package-info.utils.constants')
 local get_dependency_name_from_current_line = require('package-info.helpers.get_dependency_name_from_current_line')
@@ -32,7 +32,7 @@ end
 -- @return nil
 M.run = function()
   if not state.is_loaded then
-    logger.warn('Not in valid package.json file')
+    -- logger:log('Not in valid package.json file')
 
     return
   end
@@ -43,7 +43,7 @@ M.run = function()
     return
   end
 
-  local id = loading.new('|  Deleting ' .. dependency_name .. ' dependency')
+  local id = loading.new(' Deleting ' .. dependency_name .. ' dependency')
 
   prompt.new({
     title = ' Delete [' .. dependency_name .. '] Dependency ',

@@ -3,6 +3,8 @@ local M = {}
 M.HIGHLIGHT_GROUPS = {
   outdated = 'PackageInfoOutdatedVersion',
   up_to_date = 'PackageInfoUpToDateVersion',
+  statusline_text = 'PackageInfoStatuslineText',
+  statusline_spinner = 'PackageInfoStatuslineSpinner',
 }
 
 M.PACKAGE_MANAGERS = {

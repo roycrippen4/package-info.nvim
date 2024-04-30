@@ -59,7 +59,7 @@ M.__display_dependency_version_select = function(version_list, dependency_name)
   dependency_version_select.new({
     version_list = version_list,
     on_submit = function(selected_version)
-      local id = loading.new('|  Installing ' .. dependency_name .. '@' .. selected_version)
+      local id = loading.new(' Installing ' .. dependency_name .. '@' .. selected_version)
 
       job({
         command = M.__get_change_version_command(dependency_name, selected_version),
@@ -120,7 +120,7 @@ M.run = function()
     return
   end
 
-  local id = loading.new('|  Fetching ' .. dependency_name .. ' versions')
+  local id = loading.new(' Fetching ' .. dependency_name .. ' versions')
 
   job({
     json = true,

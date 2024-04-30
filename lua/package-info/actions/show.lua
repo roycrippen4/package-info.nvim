@@ -1,4 +1,4 @@
-local logger = require('package-info.utils.better_logger')
+-- local logger = require('package-info.utils.better_logger')
 local state = require('package-info.state')
 local parser = require('package-info.parser')
 local job = require('package-info.utils.job')
@@ -27,7 +27,7 @@ M.run = function(options)
     return
   end
 
-  local id = loading.new('| 󰇚 Fetching latest versions')
+  local id = loading.new('󰇚 Fetching latest versions')
 
   job({
     json = true,
@@ -47,7 +47,8 @@ M.run = function(options)
 
       state.last_run.update()
     end,
-    on_error = function()
+    on_error = function(error)
+      -- logger:log(error)
       loading.stop(id)
     end,
   })

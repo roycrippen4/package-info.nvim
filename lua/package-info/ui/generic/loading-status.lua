@@ -1,4 +1,6 @@
-local SPINNERS = {
+local constants = require('package-info.utils.constants')
+
+local frame = {
   '⠋',
   '⠙',
   '⠹',
@@ -20,6 +22,10 @@ local M = {
   },
 }
 
+local function redraw()
+  vim.cmd('redrawstatus')
+end
+
 --- Spawn a new loading instance
 --- @param message string - message to display in the loading status
 --- @return number - id of the created instance
@@ -36,7 +42,7 @@ M.new = function(message)
 end
 
 --- Start the instance by given id by marking it as ready to run
---- @param id string - id of the instance to start
+--- @param id number - id of the instance to start
 --- @return nil
 M.start = function(id)
   for _, instance in ipairs(M.queue) do
@@ -47,10 +53,11 @@ M.start = function(id)
 end
 
 --- Stop the instance by given id by removing it from the list
---- @param id string - id of the instance to stop and remove
+--- @param id number - id of the instance to stop and remove
 --- @return nil
 M.stop = function(id)
   local filtered_list = {}
+  M.timer:stop()
 
   for _, instance in ipairs(M.queue) do
     if instance.id ~= id then
@@ -64,17 +71,13 @@ end
 --- Update the spinner instance recursively
 --- @return nil
 M.update_spinner = function()
-  M.state.current_spinner = SPINNERS[M.state.index]
-
+  M.state.current_spinner = frame[M.state.index]
   M.state.index = M.state.index + 1
 
   if M.state.index == 10 then
     M.state.index = 1
   end
-
-  vim.fn.timer_start(60, function()
-    M.update_spinner()
-  end)
+  vim.schedule(redraw)
 end
 
 --- Get the first ready instance message if there are instances
@@ -89,10 +92,6 @@ M.get = function()
   end
 
   if not active_instance then
-    -- FIXME: this is killing all timers, so if a user has any timers, it will interrupt them
-    -- like lsp status
-    -- vim.fn.timer_stopall()
-
     M.state.is_running = false
     M.state.current_spinner = ''
     M.state.index = 1
@@ -103,10 +102,17 @@ M.get = function()
   if active_instance and not M.state.is_running then
     M.state.is_running = true
 
-    M.update_spinner()
+    if M.timer == nil then
+      M.timer = vim.uv.new_timer()
+    end
+
+    M.timer:start(100, 100, M.update_spinner)
   end
 
-  return active_instance.message
+  local spinner = '%#' .. constants.HIGHLIGHT_GROUPS.statusline_spinner .. '#' .. M.state.current_spinner .. '%*'
+  local text = 'package-info: ' .. '%#' .. constants.HIGHLIGHT_GROUPS.statusline_text .. '#' .. active_instance.message
+
+  return text .. ' ' .. spinner
 end
 
 return M

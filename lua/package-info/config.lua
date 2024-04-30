@@ -8,19 +8,22 @@ local default_config = {
   colors = {
     up_to_date = '#3C4048',
     outdated = '#d19a66',
+    statusline_text = '#00fff2',
+    statusline_spinner = '#00fff2',
+    statusline_bg = vim.fn.synIDattr(vim.fn.hlID('Statusline'), 'bg'),
   },
   icons = {
     enable = true,
     style = {
-      up_to_date = '|  ',
-      outdated = '|  ',
+      up_to_date = '  ',
+      outdated = '  ',
     },
   },
   autostart = true,
   package_manager = constants.PACKAGE_MANAGERS.npm,
   hide_up_to_date = false,
   hide_unstable_versions = false,
-  debug = true,
+  debug = false,
 }
 
 local M = {}
@@ -52,7 +55,7 @@ M.__register_package_manager = function()
         end
       end,
       on_error = function()
-        logger:log('Error detecting yarn version. Falling back to yarn <2')
+        -- logger:log('Error detecting yarn version. Falling back to yarn <2')
       end,
     })
 
@@ -94,7 +97,7 @@ end
 --- Register autocommand for loading the plugin
 --- @return nil
 M.__register_start = function()
-  logger:log('registering start')
+  -- logger:log('registering start')
   autocmd('BufEnter', {
     group = constants.AUGROUP,
     pattern = 'package.json',
@@ -131,6 +134,9 @@ M.__register_highlight_groups = function()
   local colors = {
     up_to_date = M.options.colors.up_to_date,
     outdated = M.options.colors.outdated,
+    statusline_text = M.options.colors.statusline_text,
+    statusline_spinner = M.options.colors.statusline_spinner,
+    statusline_bg = M.options.colors.statusline_bg,
   }
 
   -- 256 color support
@@ -143,6 +149,8 @@ M.__register_highlight_groups = function()
 
   vim.api.nvim_set_hl(0, constants.HIGHLIGHT_GROUPS.outdated, { fg = colors.outdated })
   vim.api.nvim_set_hl(0, constants.HIGHLIGHT_GROUPS.up_to_date, { fg = colors.up_to_date })
+  vim.api.nvim_set_hl(0, constants.HIGHLIGHT_GROUPS.statusline_text, { fg = colors.statusline_text, bg = colors.statusline_bg })
+  vim.api.nvim_set_hl(0, constants.HIGHLIGHT_GROUPS.statusline_spinner, { fg = colors.statusline_spinner, bg = colors.statusline_bg })
 end
 
 --- Register all plugin commands
