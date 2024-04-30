@@ -42,8 +42,6 @@ M.__display_on_line = function(line_number, dependency_name)
         priority = 200,
         hl_mode = "combine",
     })
-
-    -- NOTE: used for testing only since there's no way to get virtual text content via nvim API
     return virtual_text
 end
 
