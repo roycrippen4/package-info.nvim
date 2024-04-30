@@ -1,0 +1,69 @@
+name: default
+
+on: [pull_request, push]
+
+jobs:
+  stylua:
+    name: Lint Code - Stylua
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: JohnnyMorganz/stylua-action@v2.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: 0.17.0
+          args: --color always --check .
+
+  luacheck:
+    name: Lint Code - Luacheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Jayrgo/luacheck-action@v1
+
+  prettier:
+    name: Lint Code - Prettier
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Run Prettier
+        uses: creyD/prettier_action@v4.3
+        with:
+          dry: true
+          prettier_options: --check **/*.md
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install libfuse2
+        run: |
+          sudo add-apt-repository universe
+          sudo apt install libfuse2
+
+      - name: Get neovim v0.7.2
+        uses: actions/cache@v3
+        with:
+          path: build/neovim/v0.7.2
+          key: ${{ runner.os }}-appimage-0.7.2
+
+      - name: Fetch dependencies
+        run: |
+          git clone --depth 1 https://github.com/nvim-lua/plenary.nvim ~/.local/share/nvim/site/pack/vendor/start/plenary.nvim
+          git clone --depth 1 https://github.com/MunifTanjim/nui.nvim ~/.local/share/nvim/site/pack/vendor/start/nui.nvim
+
+          ln -s $(pwd) ~/.local/share/nvim/site/pack/vendor/start
+      - name: Run Tests
+        run: |
+          test -d build/neovim/v0.7.2 || {
+            mkdir -p build/neovim/v0.7.2
+            curl -Lo build/neovim/v0.7.2/nvim https://github.com/neovim/neovim/releases/download/v0.7.2/nvim.appimage
+            chmod +x build/neovim/v0.7.2/nvim
+          }
+          mkdir temp
+          build/neovim/v0.7.2/nvim --headless -c "lua require('plenary.test_harness').test_directory('.', { minimal_init='./lua/package-info/tests/minimal.vim', sequential = true })"
+          rm -rf temp
