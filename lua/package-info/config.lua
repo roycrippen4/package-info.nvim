@@ -15,8 +15,8 @@ local default_config = {
   icons = {
     enable = true,
     style = {
-      up_to_date = '  ',
-      outdated = '  ',
+      up_to_date = '  ',
+      outdated = '  ',
     },
   },
   autostart = true,
