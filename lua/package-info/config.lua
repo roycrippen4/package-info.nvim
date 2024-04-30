@@ -151,7 +151,7 @@ end
 --- @return nil
 M.setup = function(user_options)
   M.__register_user_options(user_options)
-
+  M.__register_highlight_groups()
   M.__register_package_manager()
   M.__register_namespace()
   M.__prepare_augroup()
