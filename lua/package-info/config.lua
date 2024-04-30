@@ -1,32 +1,32 @@
 local constants = require('package-info.utils.constants')
-local register_highlight_group = require('package-info.utils.register-highlight-group')
 local register_autocmd = require('package-info.utils.register-autocmd')
 local state = require('package-info.state')
 local job = require('package-info.utils.job')
 local logger = require('package-info.utils.better_logger')
 
-local M = {
-  __DEFAULT_OPTIONS = {
-    colors = {
-      up_to_date = '#3C4048',
-      outdated = '#d19a66',
-    },
-    icons = {
-      enable = true,
-      style = {
-        up_to_date = '|  ',
-        outdated = '|  ',
-      },
-    },
-    autostart = true,
-    package_manager = constants.PACKAGE_MANAGERS.npm,
-    hide_up_to_date = false,
-    hide_unstable_versions = false,
+local default_config = {
+  colors = {
+    up_to_date = '#3C4048',
+    outdated = '#d19a66',
   },
+  icons = {
+    enable = true,
+    style = {
+      up_to_date = '|  ',
+      outdated = '|  ',
+    },
+  },
+  autostart = true,
+  package_manager = constants.PACKAGE_MANAGERS.npm,
+  hide_up_to_date = false,
+  hide_unstable_versions = false,
+  debug = false,
 }
 
+local M = {}
+
 -- Initialize default options
-M.options = M.__DEFAULT_OPTIONS
+M.options = default_config
 
 --- Register namespace for usage for virtual text
 --- @return nil
@@ -130,8 +130,8 @@ M.__register_highlight_groups = function()
     }
   end
 
-  register_highlight_group(constants.HIGHLIGHT_GROUPS.outdated, colors.outdated)
-  register_highlight_group(constants.HIGHLIGHT_GROUPS.up_to_date, colors.up_to_date)
+  vim.api.nvim_set_hl(0, constants.HIGHLIGHT_GROUPS.outdated, { fg = colors.outdated })
+  vim.api.nvim_set_hl(0, constants.HIGHLIGHT_GROUPS.up_to_date, { fg = colors.up_to_date })
 end
 
 --- Register all plugin commands
