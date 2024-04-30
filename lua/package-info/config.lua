@@ -94,6 +94,7 @@ end
 --- Register autocommand for loading the plugin
 --- @return nil
 M.__register_start = function()
+  logger:log('registering start')
   autocmd('BufEnter', {
     group = constants.AUGROUP,
     pattern = 'package.json',
@@ -103,7 +104,12 @@ M.__register_start = function()
   autocmd({ 'TextChanged', 'TextChangedI' }, {
     group = constants.AUGROUP,
     pattern = 'package.json',
-    callback = function() end,
+    callback = function()
+      require('package-info.virtual_text').clear()
+      if require('package-info.core').__is_valid_package_json() then
+        require('package-info.actions.show').run(M.options)
+      end
+    end,
   })
 end
 
@@ -154,9 +160,9 @@ end
 ---@param debug boolean
 function M.__register_logger(debug)
   if debug then
-    vim.schedule(function()
+    vim.defer_fn(function()
       require('package-info.utils.better_logger'):show()
-    end)
+    end, 120)
     logger:log('Debug logging enabled')
     logger:log()
   end
@@ -167,7 +173,7 @@ end
 --- @return nil
 M.setup = function(user_options)
   M.options = vim.tbl_deep_extend('force', default_config, user_options or {})
-  -- M.__register_logger(M.options.debug)
+  M.__register_logger(M.options.debug)
   M.__register_highlight_groups()
   M.__register_package_manager()
   M.__register_namespace()
