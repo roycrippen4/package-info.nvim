@@ -3,61 +3,67 @@
 local M = {}
 
 M.setup = function(options)
-    local config = require("package-info.config")
+  local config = require('package-info.config')
 
-    config.setup(options)
+  vim.schedule(function()
+    if os.getenv('DEBUG') == '1' then
+      require('package-info.utils.better_logger'):show()
+    end
+  end)
+
+  config.setup(options)
 end
 
 M.show = function(options)
-    local show_action = require("package-info.actions.show")
+  local show_action = require('package-info.actions.show')
 
-    show_action.run(options)
+  show_action.run(options)
 end
 
 M.hide = function()
-    local hide_action = require("package-info.actions.hide")
+  local hide_action = require('package-info.actions.hide')
 
-    hide_action.run()
+  hide_action.run()
 end
 
 M.toggle = function(options)
-    local state = require("package-info.state")
+  local state = require('package-info.state')
 
-    if state.is_virtual_text_displayed then
-        M.hide()
-    else
-        M.show(options)
-    end
+  if state.is_virtual_text_displayed then
+    M.hide()
+  else
+    M.show(options)
+  end
 end
 
 M.delete = function()
-    local delete_action = require("package-info.actions.delete")
+  local delete_action = require('package-info.actions.delete')
 
-    delete_action.run()
+  delete_action.run()
 end
 
 M.update = function()
-    local update_action = require("package-info.actions.update")
+  local update_action = require('package-info.actions.update')
 
-    update_action.run()
+  update_action.run()
 end
 
 M.install = function()
-    local install_action = require("package-info.actions.install")
+  local install_action = require('package-info.actions.install')
 
-    install_action.run()
+  install_action.run()
 end
 
 M.change_version = function()
-    local change_version_action = require("package-info.actions.change-version")
+  local change_version_action = require('package-info.actions.change-version')
 
-    change_version_action.run()
+  change_version_action.run()
 end
 
 M.get_status = function()
-    local loading = require("package-info.ui.generic.loading-status")
+  local loading = require('package-info.ui.generic.loading-status')
 
-    return loading.get()
+  return loading.get()
 end
 
 return M
