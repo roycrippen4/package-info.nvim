@@ -96,7 +96,14 @@ end
 M.__register_start = function()
   autocmd('BufEnter', {
     group = constants.AUGROUP,
+    pattern = 'package.json',
     callback = require('package-info.core').load_plugin,
+  })
+
+  autocmd({ 'TextChanged', 'TextChangedI' }, {
+    group = constants.AUGROUP,
+    pattern = 'package.json',
+    callback = function() end,
   })
 end
 
@@ -106,6 +113,7 @@ M.__register_autostart = function()
   if M.options.autostart then
     autocmd('BufEnter', {
       group = constants.AUGROUP,
+      pattern = 'package.json',
       callback = require('package-info').show,
     })
   end
@@ -159,7 +167,7 @@ end
 --- @return nil
 M.setup = function(user_options)
   M.options = vim.tbl_deep_extend('force', default_config, user_options or {})
-  M.__register_logger(M.options.debug)
+  -- M.__register_logger(M.options.debug)
   M.__register_highlight_groups()
   M.__register_package_manager()
   M.__register_namespace()
