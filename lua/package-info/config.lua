@@ -89,7 +89,7 @@ end
 -- @param user_options: M.__DEFAULT_OPTIONS - all the options user can provide in the plugin config
 --- @return nil
 M.__register_user_options = function(user_options)
-  M.options = vim.tbl_deep_extend('keep', user_options or {}, M.__DEFAULT_OPTIONS)
+  M.options = vim.tbl_deep_extend('keep', user_options or {}, default_config)
 end
 
 --- Prepare a clean augroup for the plugin to use
