@@ -23,7 +23,7 @@ local default_config = {
   package_manager = constants.PACKAGE_MANAGERS.npm,
   hide_up_to_date = false,
   hide_unstable_versions = false,
-  debug = true,
+  debug = false,
 }
 
 local M = {}
