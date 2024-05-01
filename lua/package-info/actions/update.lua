@@ -1,4 +1,4 @@
-local logger = require('package-info.utils.logger')
+local logger = require('package-info.utils.better_logger')
 local prompt = require('package-info.ui.generic.prompt')
 local job = require('package-info.utils.job')
 local state = require('package-info.state')
@@ -12,8 +12,8 @@ local loading = require('package-info.ui.generic.loading-status')
 local M = {}
 
 --- Returns the update command based on package manager
--- @param dependency_name: string - dependency for which to get the command
--- @return string
+--- @param dependency_name string - dependency for which to get the command
+--- @return string
 M.__get_command = function(dependency_name)
   if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
     if state.has_old_yarn then
@@ -30,13 +30,19 @@ M.__get_command = function(dependency_name)
   if config.options.package_manager == constants.PACKAGE_MANAGERS.pnpm then
     return 'pnpm update --latest ' .. dependency_name
   end
+
+  if config.options.package_manager == constants.PACKAGE_MANAGERS.bun then
+    return 'bun add ' .. dependency_name .. '@latest'
+  end
+
+  return ''
 end
 
 --- Runs the update dependency action
 -- @return nil
 M.run = function()
   if not state.is_loaded then
-    logger.warn('Not in valid package.json file')
+    -- logger.warn('Not in valid package.json file')
 
     return
   end

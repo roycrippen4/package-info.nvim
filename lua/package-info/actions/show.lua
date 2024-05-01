@@ -47,7 +47,7 @@ M.run = function(options)
 
       state.last_run.update()
     end,
-    on_error = function(error)
+    on_error = function()
       -- logger:log(error)
       loading.stop(id)
     end,

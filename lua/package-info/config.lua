@@ -23,7 +23,7 @@ local default_config = {
   package_manager = constants.PACKAGE_MANAGERS.npm,
   hide_up_to_date = false,
   hide_unstable_versions = false,
-  debug = false,
+  debug = true,
 }
 
 local M = {}
@@ -86,6 +86,17 @@ M.__register_package_manager = function()
 
     return
   end
+
+  local bun_lock = io.open('bun.lockb', 'r')
+
+  if bun_lock ~= nil then
+    M.options.package_manager = constants.PACKAGE_MANAGERS.bun
+
+    io.close(bun_lock)
+    state.is_in_project = true
+
+    return
+  end
 end
 
 --- Prepare a clean augroup for the plugin to use
@@ -97,7 +108,6 @@ end
 --- Register autocommand for loading the plugin
 --- @return nil
 M.__register_start = function()
-  -- logger:log('registering start')
   autocmd('BufEnter', {
     group = constants.AUGROUP,
     pattern = 'package.json',
