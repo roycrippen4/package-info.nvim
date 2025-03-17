@@ -1,7 +1,6 @@
 local prompt = require('package-info.ui.generic.prompt')
 local job = require('package-info.utils.job')
 local config = require('package-info.config')
--- local logger = require('package-info.utils.better_logger')
 local state = require('package-info.state')
 local constants = require('package-info.utils.constants')
 local get_dependency_name_from_current_line = require('package-info.helpers.get_dependency_name_from_current_line')
@@ -11,10 +10,10 @@ local loading = require('package-info.ui.generic.loading-status')
 
 local M = {}
 
---- Returns the delete command based on package manager
--- @param dependency_name: string - dependency for which to get the command
--- @return string
-M.__get_command = function(dependency_name)
+---Returns the delete command based on package manager
+---@param dependency_name string - dependency for which to get the command
+---@return string?
+local function get_command(dependency_name)
   if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
     return 'yarn remove ' .. dependency_name
   end
@@ -32,12 +31,10 @@ M.__get_command = function(dependency_name)
   end
 end
 
---- Runs the delete action
--- @return nil
-M.run = function()
+---Runs the delete action
+---@return nil
+function M.run()
   if not state.is_loaded then
-    -- logger:log('Not in valid package.json file')
-
     return
   end
 
@@ -54,7 +51,7 @@ M.run = function()
     on_submit = function()
       job({
         json = false,
-        command = M.__get_command(dependency_name),
+        command = get_command(dependency_name),
         on_start = function()
           loading.start(id)
         end,

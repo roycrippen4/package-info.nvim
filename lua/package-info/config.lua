@@ -1,7 +1,6 @@
 local autocmd = vim.api.nvim_create_autocmd
 local constants = require('package-info.utils.constants')
 local job = require('package-info.utils.job')
-local logger = require('package-info.utils.better_logger')
 local state = require('package-info.state')
 
 local default_config = {
@@ -55,7 +54,7 @@ local function register_package_manager()
         end
       end,
       on_error = function()
-        -- logger:log('Error detecting yarn version. Falling back to yarn <2')
+        vim.notify('Error detecting yarn version. Falling back to yarn <2', vim.log.levels.WARN)
       end,
     })
 
@@ -99,15 +98,15 @@ local function register_package_manager()
   end
 end
 
---- Prepare a clean augroup for the plugin to use
---- @return nil
+---Prepare a clean augroup for the plugin to use
+---@return nil
 local function prepare_augroup()
   vim.api.nvim_create_augroup(constants.AUGROUP, { clear = true })
 end
 
---- Register autocommand for loading the plugin
---- @return nil
-function M.__register_start()
+---Register autocommand for loading the plugin
+---@return nil
+local function register_start()
   autocmd('BufEnter', {
     group = constants.AUGROUP,
     pattern = 'package.json',
@@ -118,17 +117,18 @@ function M.__register_start()
     group = constants.AUGROUP,
     pattern = 'package.json',
     callback = function()
-      require('package-info.virtual_text').clear()
-      if require('package-info.core').__is_valid_package_json() then
+      vim.notify('reload')
+      if require('package-info.core').is_valid_package_json() then
+        require('package-info.virtual_text').clear()
         require('package-info.actions.show').run(M.options)
       end
     end,
   })
 end
 
---- Register autocommand for auto-starting plugin
---- @return nil
-function M.__register_autostart()
+---Register autocommand for auto-starting plugin
+---@return nil
+local function register_autostart()
   if M.options.autostart then
     autocmd('BufEnter', {
       group = constants.AUGROUP,
@@ -138,8 +138,8 @@ function M.__register_autostart()
   end
 end
 
---- Register all highlight groups
---- @return nil
+---Register all highlight groups
+---@return nil
 local function register_highlight_groups()
   local colors = {
     up_to_date = M.options.colors.up_to_date,
@@ -149,22 +149,14 @@ local function register_highlight_groups()
     statusline_bg = M.options.colors.statusline_bg,
   }
 
-  -- 256 color support
-  if not vim.o.termguicolors then
-    colors = {
-      up_to_date = constants.LEGACY_COLORS.up_to_date,
-      outdated = constants.LEGACY_COLORS.outdated,
-    }
-  end
-
   vim.api.nvim_set_hl(0, constants.HIGHLIGHT_GROUPS.outdated, { fg = colors.outdated })
   vim.api.nvim_set_hl(0, constants.HIGHLIGHT_GROUPS.up_to_date, { fg = colors.up_to_date })
   vim.api.nvim_set_hl(0, constants.HIGHLIGHT_GROUPS.statusline_text, { fg = colors.statusline_text, bg = colors.statusline_bg })
   vim.api.nvim_set_hl(0, constants.HIGHLIGHT_GROUPS.statusline_spinner, { fg = colors.statusline_spinner, bg = colors.statusline_bg })
 end
 
---- Register all plugin commands
---- @return nil
+---Register all plugin commands
+---@return nil
 local function register_commands()
   vim.cmd('command! ' .. constants.COMMANDS.show .. " lua require('package-info').show()")
   vim.cmd('command! ' .. constants.COMMANDS.show_force .. " lua require('package-info').show({ force = true })")
@@ -175,23 +167,13 @@ local function register_commands()
   vim.cmd('command! ' .. constants.COMMANDS.change_version .. " lua require('package-info').change_version()")
 end
 
----@param debug boolean
-local function register_logger(debug)
-  if debug then
-    vim.defer_fn(function()
-      require('package-info.utils.better_logger'):show()
-    end, 120)
-    logger:log('Debug logging enabled')
-    logger:log()
-  end
-end
-
---- Take all user options and setup the config
--- @param user_options default M table - all options user can provide in the plugin config
---- @return nil
+--- TODO: Fix types
+---
+---Take all user options and setup the config
+---@param user_options default M table - all options user can provide in the plugin config
+---@return nil
 function M.setup(user_options)
   M.options = vim.tbl_deep_extend('force', default_config, user_options or {})
-  register_logger(M.options.debug)
   register_highlight_groups()
   register_package_manager()
   register_namespace()

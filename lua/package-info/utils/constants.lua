@@ -1,5 +1,6 @@
 local M = {}
 
+---@class HighlightGroups
 M.HIGHLIGHT_GROUPS = {
   outdated = 'PackageInfoOutdatedVersion',
   up_to_date = 'PackageInfoUpToDateVersion',
@@ -7,6 +8,7 @@ M.HIGHLIGHT_GROUPS = {
   statusline_spinner = 'PackageInfoStatuslineSpinner',
 }
 
+---@class PackageManagers
 M.PACKAGE_MANAGERS = {
   yarn = 'yarn',
   npm = 'npm',
@@ -14,16 +16,13 @@ M.PACKAGE_MANAGERS = {
   bun = 'bun',
 }
 
+---@class DependencyType
 M.DEPENDENCY_TYPE = {
   production = 'prod',
   development = 'dev',
 }
 
-M.LEGACY_COLORS = {
-  up_to_date = '237',
-  outdated = '173',
-}
-
+---@class Commands
 M.COMMANDS = {
   show = 'PackageInfoShow',
   show_force = 'PackageInfoShowForce',

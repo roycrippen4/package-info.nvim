@@ -1,25 +1,24 @@
 local json_parser = require('package-info.libs.json_parser')
--- local logger = require('package-info.utils.logger')
 local safe_call = require('package-info.utils.safe-call')
 
---- Runs an async job
--- @param props.command - string command to run
--- @param props.on_success - function to invoke with the results
--- @param props.on_error - function to invoke if the command fails
--- @param props.ignore_error?: boolean - ignore non-zero exit codes (npm outdated throws 1 when getting the list)
--- @param props.on_start?: function - callback to invoke before the job starts
--- @param props.json?: boolean - if output should be parsed as json
--- @return nil
+--- TODO: types
+---
+---Runs an async job
+---@param props.command - string command to run
+---@param props.on_success - function to invoke with the results
+---@param props.on_error - function to invoke if the command fails
+---@param props.ignore_error? boolean - ignore non-zero exit codes (npm outdated throws 1 when getting the list)
+---@param props.on_start? function - callback to invoke before the job starts
+---@param props.json? boolean - if output should be parsed as json
+---@return nil
 return function(props)
   local value = ''
 
   safe_call(props.on_start)
 
   local function on_error()
-    -- logger:log('Error running ' .. props.command .. '. Try running manually.')
-
+    vim.notify('Error running ' .. props.command .. '. Try running manually.', vim.log.levels.ERROR)
     if props.on_error ~= nil then
-      -- logger:log('error')
       props.on_error()
     end
   end
@@ -41,7 +40,6 @@ return function(props)
     cwd = cwd,
     on_exit = function(_, exit_code)
       if exit_code ~= 0 and not props.ignore_error then
-        -- logger:log('error')
         on_error()
 
         return
@@ -51,9 +49,7 @@ return function(props)
         local ok, json_value = pcall(json_parser.decode, value)
 
         if ok then
-          -- logger:log('ok')
           props.on_success(json_value)
-
           return
         end
 

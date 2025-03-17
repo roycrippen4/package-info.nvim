@@ -1,7 +1,6 @@
 local Menu = require('nui.menu')
 
 local safe_call = require('package-info.utils.safe-call')
-local logger = require('package-info.utils.logger')
 
 local M = {}
 
@@ -73,7 +72,7 @@ function M.open(props)
   props = props or {}
 
   if M.instance == nil then
-    logger.error('Failed to open select dependency type prompt. Not spawned properly')
+    vim.notify('Failed to open select dependency type prompt. Not spawned properly', vim.log.levels.ERROR)
 
     safe_call(props.on_error)
 
@@ -95,7 +94,7 @@ function M.close(props)
   props = props or {}
 
   if M.instance == nil then
-    logger.error('Failed to close select dependency type prompt. Not spawned properly')
+    vim.notify('Failed to close select dependency type prompt. Not spawned properly', vim.log.levels.ERROR)
 
     safe_call(props.on_error)
 

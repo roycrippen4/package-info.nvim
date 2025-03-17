@@ -1,4 +1,3 @@
-local logger = require('package-info.utils.better_logger')
 local prompt = require('package-info.ui.generic.prompt')
 local job = require('package-info.utils.job')
 local state = require('package-info.state')
@@ -11,10 +10,10 @@ local loading = require('package-info.ui.generic.loading-status')
 
 local M = {}
 
---- Returns the update command based on package manager
---- @param dependency_name string - dependency for which to get the command
---- @return string
-M.__get_command = function(dependency_name)
+---Returns the update command based on package manager
+---@param dependency_name string - dependency for which to get the command
+---@return string
+local function get_command(dependency_name)
   if config.options.package_manager == constants.PACKAGE_MANAGERS.yarn then
     if state.has_old_yarn then
       return 'yarn upgrade ' .. dependency_name .. ' --latest'
@@ -38,11 +37,11 @@ M.__get_command = function(dependency_name)
   return ''
 end
 
---- Runs the update dependency action
--- @return nil
-M.run = function()
+---Runs the update dependency action
+---@return nil
+function M.run()
   if not state.is_loaded then
-    -- logger.warn('Not in valid package.json file')
+    vim.notify('Not in valid package.json file', vim.log.levels.WARN)
 
     return
   end
@@ -60,7 +59,7 @@ M.run = function()
     on_submit = function()
       job({
         json = false,
-        command = M.__get_command(dependency_name),
+        command = get_command(dependency_name),
         on_start = function()
           loading.start(id)
         end,

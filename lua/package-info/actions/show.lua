@@ -1,4 +1,3 @@
--- local logger = require('package-info.utils.better_logger')
 local state = require('package-info.state')
 local parser = require('package-info.parser')
 local job = require('package-info.utils.job')
@@ -9,9 +8,11 @@ local loading = require('package-info.ui.generic.loading-status')
 
 local M = {}
 
---- Runs the show outdated dependencies action
--- @return nil
-M.run = function(options)
+--- TODO: types
+---
+---Runs the show outdated dependencies action
+---@return nil
+function M.run(options)
   if not state.is_loaded then
     return
   end
@@ -48,7 +49,6 @@ M.run = function(options)
       state.last_run.update()
     end,
     on_error = function()
-      -- logger:log(error)
       loading.stop(id)
     end,
   })

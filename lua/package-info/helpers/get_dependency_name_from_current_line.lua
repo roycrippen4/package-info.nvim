@@ -1,5 +1,4 @@
 local state = require('package-info.state')
-local logger = require('package-info.utils.logger')
 local get_dependency_name_from_line = require('package-info.helpers.get_dependency_name_from_line')
 
 ---Gets dependency name from current line
@@ -12,8 +11,7 @@ return function()
   if state.dependencies.installed[dependency_name] then
     return dependency_name
   else
-    logger.warn('No valid dependency on current line')
-
+    vim.notify('No valid dependency on current line', vim.log.levels.WARN)
     return nil
   end
 end

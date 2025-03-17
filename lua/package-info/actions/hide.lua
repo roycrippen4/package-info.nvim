@@ -1,15 +1,13 @@
 local state = require('package-info.state')
-local logger = require('package-info.utils.logger')
 local virtual_text = require('package-info.virtual_text')
 
 local M = {}
 
---- Runs the hide virtual text action
--- @return nil
-M.run = function()
+---Runs the hide virtual text action
+---@return nil
+function M.run()
   if not state.is_loaded then
-    logger.warn('Not in valid package.json file')
-
+    vim.notify('Not in valid package.json file', vim.log.levels.WARN)
     return
   end
 

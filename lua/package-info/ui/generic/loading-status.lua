@@ -28,9 +28,9 @@ local function redraw()
   vim.cmd('redrawstatus')
 end
 
---- Spawn a new loading instance
---- @param message string - message to display in the loading status
---- @return number - id of the created instance
+---Spawn a new loading instance
+---@param message string - message to display in the loading status
+---@return number - id of the created instance
 function M.new(message)
   local instance = {
     id = math.random(),
@@ -43,9 +43,9 @@ function M.new(message)
   return instance.id
 end
 
---- Start the instance by given id by marking it as ready to run
---- @param id number - id of the instance to start
---- @return nil
+---Start the instance by given id by marking it as ready to run
+---@param id number - id of the instance to start
+---@return nil
 function M.start(id)
   for _, instance in ipairs(M.queue) do
     if instance.id == id then
@@ -54,9 +54,9 @@ function M.start(id)
   end
 end
 
---- Stop the instance by given id by removing it from the list
---- @param id number - id of the instance to stop and remove
---- @return nil
+---Stop the instance by given id by removing it from the list
+---@param id number - id of the instance to stop and remove
+---@return nil
 function M.stop(id)
   local filtered_list = {}
   if M.timer then
@@ -72,8 +72,8 @@ function M.stop(id)
   M.queue = filtered_list
 end
 
---- Update the spinner instance recursively
---- @return nil
+---Update the spinner instance recursively
+---@return nil
 function M.update_spinner()
   M.state.current_spinner = frame[M.state.index]
   M.state.index = M.state.index + 1
@@ -84,8 +84,8 @@ function M.update_spinner()
   vim.schedule(redraw)
 end
 
---- Get the first ready instance message if there are instances
---- @return string
+---Get the first ready instance message if there are instances
+---@return string
 function M.get()
   local active_instance = nil
 

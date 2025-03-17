@@ -4,7 +4,7 @@ local state = require('package-info.state')
 
 ---Reloads the buffer if it's package.json
 ---@return nil
-local reload_buffer = function()
+local function reload_buffer()
   local current_buffer_number = vim.fn.bufnr()
 
   if current_buffer_number == state.buffer.id then

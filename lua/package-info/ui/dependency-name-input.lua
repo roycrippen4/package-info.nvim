@@ -1,7 +1,6 @@
 --- TODO: remote dependency on ui
 local Input = require('nui.input')
 
-local logger = require('package-info.utils.logger')
 local safe_call = require('package-info.utils.safe-call')
 
 local M = {}
@@ -41,7 +40,7 @@ function M.new(props)
     prompt = '> ',
     on_submit = function(dependency_name)
       if dependency_name == '' then
-        logger.error('No dependency name specified')
+        vim.notify('No dependency name specified', vim.log.levels.ERROR)
 
         safe_call(props.on_error)
 
@@ -66,7 +65,7 @@ function M.open(props)
   props = props or {}
 
   if M.instance == nil then
-    logger.error('Failed to open dependency name input. Not spawned properly')
+    vim.notify('Failed to open dependency name input. Not spawned properly', vim.log.levels.ERROR)
 
     safe_call(props.on_error)
 
@@ -88,7 +87,7 @@ function M.close(props)
   props = props or {}
 
   if M.instance == nil then
-    logger.error('Failed to close dependency name input. Not spawned properly')
+    vim.notify('Failed to close dependency name input. Not spawned properly', vim.log.levels.ERROR)
 
     safe_call(props.on_error)
 

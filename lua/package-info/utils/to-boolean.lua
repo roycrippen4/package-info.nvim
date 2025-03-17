@@ -1,6 +1,6 @@
---- Converts a nullish value to a boolean
--- @param value?: string | number | table - value to check
--- @return boolean
+---Converts a nullish value to a boolean
+---@param value? string | number | table - value to check
+---@return boolean
 return function(value)
   if value == nil then
     return false
