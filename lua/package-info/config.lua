@@ -1,6 +1,7 @@
 local constants = require('package-info.utils.constants')
 local job = require('package-info.utils.job')
 local state = require('package-info.state')
+local scripts = require('package-info.scripts')
 
 ---@class PackageInfo.Config
 local default_config = {
@@ -22,6 +23,7 @@ local default_config = {
   package_manager = constants.PACKAGE_MANAGERS.npm,
   hide_up_to_date = false,
   hide_unstable_versions = false,
+  scripts = scripts.defaults,
 }
 
 local M = {
@@ -178,13 +180,12 @@ local function register_commands()
   vim.cmd('command! ' .. constants.COMMANDS.change_version .. " lua require('package-info').change_version()")
 end
 
---- TODO: Fix types
----
 ---Take all user options and setup the config
 ---@param opts PackageInfo.Config M table - all options user can provide in the plugin config
 ---@return nil
 function M.setup(opts)
   M.options = vim.tbl_deep_extend('force', default_config, opts or {})
+  scripts.setup(opts.scripts)
   register_highlight_groups()
   register_package_manager()
   register_namespace()
