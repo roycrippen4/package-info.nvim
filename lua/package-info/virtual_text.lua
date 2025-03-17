@@ -7,7 +7,7 @@ local get_dependency_name_from_line = require('package-info.helpers.get_dependen
 local M = {}
 
 ---Draws virtual text on given buffer line
----@param line_number number - line on which to place virtual text
+---@param line_number integer - line on which to place virtual text
 ---@param dependency_name string - dependency based on which to get the virtual text
 ---@return nil
 local function display_on_line(line_number, dependency_name)
@@ -55,16 +55,6 @@ function M.clear()
   end
 end
 
----TODO: Type definitino for outdated dependencies table
-
---- Handles virtual text displaying
----@param outdated_dependencies? table - outdated dependencies
----{
----    [dependency_name]: {
----        current: string - currently installed version
----        latest: string - latest available version
----    }
----}
 ---@return nil
 function M.display()
   for line_number, line_content in ipairs(state.buffer.lines) do
