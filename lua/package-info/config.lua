@@ -1,8 +1,8 @@
-local autocmd = vim.api.nvim_create_autocmd
 local constants = require('package-info.utils.constants')
 local job = require('package-info.utils.job')
 local state = require('package-info.state')
 
+---@class PackageInfo.Config
 local default_config = {
   colors = {
     up_to_date = '#3C4048',
@@ -22,13 +22,11 @@ local default_config = {
   package_manager = constants.PACKAGE_MANAGERS.npm,
   hide_up_to_date = false,
   hide_unstable_versions = false,
-  debug = false,
 }
 
-local M = {}
-
--- Initialize default options
-M.options = default_config
+local M = {
+  options = default_config,
+}
 
 ---Register namespace for usage for virtual text
 ---@return nil
@@ -104,25 +102,38 @@ local function prepare_augroup()
   vim.api.nvim_create_augroup(constants.AUGROUP, { clear = true })
 end
 
+local function redraw()
+  require('package-info.virtual_text').clear()
+  if require('package-info.core').is_valid_package_json() then
+    require('package-info.actions.show').run()
+  end
+end
+
+---@type uv.uv_timer_t | nil
+local debounce_timer
+local function debounced_update()
+  if debounce_timer then
+    debounce_timer:stop()
+    debounce_timer:close()
+  end
+
+  debounce_timer = vim.uv.new_timer()
+  assert(debounce_timer):start(300, 0, vim.schedule_wrap(redraw))
+end
+
 ---Register autocommand for loading the plugin
 ---@return nil
 local function register_start()
-  autocmd('BufEnter', {
+  vim.api.nvim_create_autocmd('BufEnter', {
     group = constants.AUGROUP,
     pattern = 'package.json',
     callback = require('package-info.core').load_plugin,
   })
 
-  autocmd({ 'TextChanged', 'TextChangedI' }, {
+  vim.api.nvim_create_autocmd({ 'TextChanged', 'TextChangedI' }, {
     group = constants.AUGROUP,
     pattern = 'package.json',
-    callback = function()
-      vim.notify('reload')
-      if require('package-info.core').is_valid_package_json() then
-        require('package-info.virtual_text').clear()
-        require('package-info.actions.show').run(M.options)
-      end
-    end,
+    callback = debounced_update,
   })
 end
 
@@ -130,7 +141,7 @@ end
 ---@return nil
 local function register_autostart()
   if M.options.autostart then
-    autocmd('BufEnter', {
+    vim.api.nvim_create_autocmd('BufEnter', {
       group = constants.AUGROUP,
       pattern = 'package.json',
       callback = require('package-info').show,
@@ -170,10 +181,10 @@ end
 --- TODO: Fix types
 ---
 ---Take all user options and setup the config
----@param user_options default M table - all options user can provide in the plugin config
+---@param opts PackageInfo.Config M table - all options user can provide in the plugin config
 ---@return nil
-function M.setup(user_options)
-  M.options = vim.tbl_deep_extend('force', default_config, user_options or {})
+function M.setup(opts)
+  M.options = vim.tbl_deep_extend('force', default_config, opts or {})
   register_highlight_groups()
   register_package_manager()
   register_namespace()
