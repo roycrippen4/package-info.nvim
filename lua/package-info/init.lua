@@ -2,61 +2,44 @@
 
 local M = {}
 
-M.setup = function(options)
-  local config = require('package-info.config')
-  config.setup(options)
+function M.setup(options)
+  require('package-info.config').setup(options)
 end
 
-M.show = function(options)
-  local show_action = require('package-info.actions.show')
-
-  show_action.run(options)
+function M.show(options)
+  require('package-info.actions.show').run(options)
 end
 
-M.hide = function()
-  local hide_action = require('package-info.actions.hide')
-
-  hide_action.run()
+function M.hide()
+  require('package-info.actions.hide').run()
 end
 
-M.toggle = function(options)
-  local state = require('package-info.state')
-
-  if state.is_virtual_text_displayed then
+function M.toggle(options)
+  if require('package-info.state').is_virtual_text_displayed then
     M.hide()
   else
     M.show(options)
   end
 end
 
-M.delete = function()
-  local delete_action = require('package-info.actions.delete')
-
-  delete_action.run()
+function M.delete()
+  require('package-info.actions.delete').run()
 end
 
-M.update = function()
-  local update_action = require('package-info.actions.update')
-
-  update_action.run()
+function M.update()
+  require('package-info.actions.update').run()
 end
 
-M.install = function()
-  local install_action = require('package-info.actions.install')
-
-  install_action.run()
+function M.install()
+  require('package-info.actions.install').run()
 end
 
-M.change_version = function()
-  local change_version_action = require('package-info.actions.change-version')
-
-  change_version_action.run()
+function M.change_version()
+  require('package-info.actions.change-version').run()
 end
 
-M.get_status = function()
-  local loading = require('package-info.ui.generic.loading-status')
-
-  return loading.get()
+function M.get_status()
+  return require('package-info.ui.generic.loading-status').get()
 end
 
 return M
