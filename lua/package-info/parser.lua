@@ -4,7 +4,7 @@ local clean_version = require('package-info.helpers.clean_version')
 
 local M = {}
 
-M.parse_buffer = function()
+function M.parse_buffer()
   local buffer_lines = vim.api.nvim_buf_get_lines(state.buffer.id, 0, -1, false)
   local buffer_json_value = json_parser.decode(table.concat(buffer_lines))
 

@@ -14,6 +14,8 @@ local frame = {
 }
 
 local M = {
+  ---@type uv.uv_timer_t | nil
+  timer = nil,
   queue = {},
   state = {
     current_spinner = '',
@@ -29,7 +31,7 @@ end
 --- Spawn a new loading instance
 --- @param message string - message to display in the loading status
 --- @return number - id of the created instance
-M.new = function(message)
+function M.new(message)
   local instance = {
     id = math.random(),
     message = message,
@@ -44,7 +46,7 @@ end
 --- Start the instance by given id by marking it as ready to run
 --- @param id number - id of the instance to start
 --- @return nil
-M.start = function(id)
+function M.start(id)
   for _, instance in ipairs(M.queue) do
     if instance.id == id then
       instance.is_ready = true
@@ -55,9 +57,11 @@ end
 --- Stop the instance by given id by removing it from the list
 --- @param id number - id of the instance to stop and remove
 --- @return nil
-M.stop = function(id)
+function M.stop(id)
   local filtered_list = {}
-  M.timer:stop()
+  if M.timer then
+    M.timer:stop()
+  end
 
   for _, instance in ipairs(M.queue) do
     if instance.id ~= id then
@@ -70,7 +74,7 @@ end
 
 --- Update the spinner instance recursively
 --- @return nil
-M.update_spinner = function()
+function M.update_spinner()
   M.state.current_spinner = frame[M.state.index]
   M.state.index = M.state.index + 1
 
@@ -82,7 +86,7 @@ end
 
 --- Get the first ready instance message if there are instances
 --- @return string
-M.get = function()
+function M.get()
   local active_instance = nil
 
   for _, instance in pairs(M.queue) do
@@ -104,9 +108,9 @@ M.get = function()
 
     if M.timer == nil then
       M.timer = vim.uv.new_timer()
+    else
+      M.timer:start(100, 100, M.update_spinner)
     end
-
-    M.timer:start(100, 100, M.update_spinner)
   end
 
   local spinner = '%#' .. constants.HIGHLIGHT_GROUPS.statusline_spinner .. '#' .. M.state.current_spinner .. '%*'

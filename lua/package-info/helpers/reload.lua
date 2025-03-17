@@ -2,8 +2,8 @@ local parser = require('package-info.parser')
 local virtual_text = require('package-info.virtual_text')
 local state = require('package-info.state')
 
---- Reloads the buffer if it's package.json
--- @return nil
+---Reloads the buffer if it's package.json
+---@return nil
 local reload_buffer = function()
   local current_buffer_number = vim.fn.bufnr()
 
@@ -13,8 +13,8 @@ local reload_buffer = function()
   end
 end
 
---- Rereads the current buffer value and reloads the buffer
--- @return nil
+---Rereads the current buffer value and reloads the buffer
+---@return nil
 return function()
   if not state.is_loaded then
     return

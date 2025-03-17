@@ -5,7 +5,7 @@ local M = {}
 -- @param highlight_group: string - highlight group to use when printing the message
 -- @return nil
 M.__print = function(message, highlight_group)
-    vim.api.nvim_echo({ { "PackageInfo: " .. message, highlight_group or "" } }, {}, {})
+  vim.api.nvim_echo({ { 'PackageInfo: ' .. message, highlight_group or '' } }, {}, {})
 end
 
 --- Prints an error message
@@ -13,7 +13,7 @@ end
 -- @param message: string - error message to print
 -- @return nil
 M.error = function(message)
-    M.__print(message, "ErrorMsg")
+  M.__print(message, 'ErrorMsg')
 end
 
 --- Prints a warning message
@@ -21,7 +21,7 @@ end
 -- @param message: string - warning message to print
 -- @return nil
 M.warn = function(message)
-    M.__print(message, "WarningMsg")
+  M.__print(message, 'WarningMsg')
 end
 
 --- Prints an info message
@@ -29,7 +29,7 @@ end
 -- @param message: string - info message to print
 -- @return nil
 M.info = function(message)
-    M.__print(message)
+  M.__print(message)
 end
 
 return M

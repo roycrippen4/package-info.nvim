@@ -7,11 +7,11 @@ local get_dependency_name_from_line = require('package-info.helpers.get_dependen
 
 local M = {}
 
---- Draws virtual text on given buffer line
---- @param line_number number - line on which to place virtual text
---- @param dependency_name string - dependency based on which to get the virtual text
---- @return nil
-M.__display_on_line = function(line_number, dependency_name)
+---Draws virtual text on given buffer line
+---@param line_number number - line on which to place virtual text
+---@param dependency_name string - dependency based on which to get the virtual text
+---@return nil
+local function display_on_line(line_number, dependency_name)
   local virtual_text = {
     group = constants.HIGHLIGHT_GROUPS.up_to_date,
     icon = config.options.icons.style.up_to_date,
@@ -46,15 +46,17 @@ M.__display_on_line = function(line_number, dependency_name)
   return virtual_text
 end
 
---- Clear all plugin virtual text in package.json
--- @return nil
-M.clear = function()
+---Clear all plugin virtual text in package.json
+---@return nil
+function M.clear()
   if state.is_virtual_text_displayed then
     vim.api.nvim_buf_clear_namespace(state.buffer.id, state.namespace.id, 0, -1)
 
     state.is_virtual_text_displayed = false
   end
 end
+
+---TODO: Type definitino for outdated dependencies table
 
 --- Handles virtual text displaying
 -- @param outdated_dependencies?: table - outdated dependencies
@@ -65,12 +67,12 @@ end
 --     }
 -- }
 -- @return nil
-M.display = function()
+function M.display()
   for line_number, line_content in ipairs(state.buffer.lines) do
     local dependency_name = get_dependency_name_from_line(line_content)
 
     if dependency_name then
-      M.__display_on_line(line_number, dependency_name)
+      display_on_line(line_number, dependency_name)
     end
   end
 

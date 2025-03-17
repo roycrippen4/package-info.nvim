@@ -31,15 +31,15 @@ local M = {}
 -- Initialize default options
 M.options = default_config
 
---- Register namespace for usage for virtual text
---- @return nil
-M.__register_namespace = function()
+---Register namespace for usage for virtual text
+---@return nil
+local function register_namespace()
   state.namespace.create()
 end
 
--- Check which lock file exists and set package manager accordingly
---- @return nil
-M.__register_package_manager = function()
+---Check which lock file exists and set package manager accordingly
+---@return nil
+local function register_package_manager()
   local yarn_lock = io.open('yarn.lock', 'r')
 
   if yarn_lock ~= nil then
@@ -101,13 +101,13 @@ end
 
 --- Prepare a clean augroup for the plugin to use
 --- @return nil
-M.__prepare_augroup = function()
+local function prepare_augroup()
   vim.api.nvim_create_augroup(constants.AUGROUP, { clear = true })
 end
 
 --- Register autocommand for loading the plugin
 --- @return nil
-M.__register_start = function()
+function M.__register_start()
   autocmd('BufEnter', {
     group = constants.AUGROUP,
     pattern = 'package.json',
@@ -128,7 +128,7 @@ end
 
 --- Register autocommand for auto-starting plugin
 --- @return nil
-M.__register_autostart = function()
+function M.__register_autostart()
   if M.options.autostart then
     autocmd('BufEnter', {
       group = constants.AUGROUP,
@@ -140,7 +140,7 @@ end
 
 --- Register all highlight groups
 --- @return nil
-M.__register_highlight_groups = function()
+local function register_highlight_groups()
   local colors = {
     up_to_date = M.options.colors.up_to_date,
     outdated = M.options.colors.outdated,
@@ -165,7 +165,7 @@ end
 
 --- Register all plugin commands
 --- @return nil
-M.__register_commands = function()
+local function register_commands()
   vim.cmd('command! ' .. constants.COMMANDS.show .. " lua require('package-info').show()")
   vim.cmd('command! ' .. constants.COMMANDS.show_force .. " lua require('package-info').show({ force = true })")
   vim.cmd('command! ' .. constants.COMMANDS.hide .. " lua require('package-info').hide()")
@@ -176,7 +176,7 @@ M.__register_commands = function()
 end
 
 ---@param debug boolean
-function M.__register_logger(debug)
+local function register_logger(debug)
   if debug then
     vim.defer_fn(function()
       require('package-info.utils.better_logger'):show()
@@ -189,16 +189,16 @@ end
 --- Take all user options and setup the config
 -- @param user_options default M table - all options user can provide in the plugin config
 --- @return nil
-M.setup = function(user_options)
+function M.setup(user_options)
   M.options = vim.tbl_deep_extend('force', default_config, user_options or {})
-  M.__register_logger(M.options.debug)
-  M.__register_highlight_groups()
-  M.__register_package_manager()
-  M.__register_namespace()
-  M.__prepare_augroup()
-  M.__register_start()
-  M.__register_autostart()
-  M.__register_commands()
+  register_logger(M.options.debug)
+  register_highlight_groups()
+  register_package_manager()
+  register_namespace()
+  prepare_augroup()
+  register_start()
+  register_autostart()
+  register_commands()
 end
 
 return M
