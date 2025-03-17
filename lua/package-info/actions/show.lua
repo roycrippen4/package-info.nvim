@@ -8,20 +8,12 @@ local loading = require('package-info.ui.generic.loading-status')
 
 local M = {}
 
---- TODO: types
----
 ---Runs the show outdated dependencies action
 ---@return nil
-function M.run(options)
-  if not state.is_loaded then
-    return
-  end
-
+function M.run()
   reload()
 
-  options = options or { force = false }
-
-  if state.last_run.should_skip() and not options.force then
+  if state.last_run.should_skip() then
     virtual_text.display()
     reload()
 
